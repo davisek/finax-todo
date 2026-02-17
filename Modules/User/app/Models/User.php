@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Todo\Models\Todo;
 
 /**
  * Class User
@@ -25,7 +25,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens;
 
     protected $table = 'users';
 
@@ -36,8 +36,6 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'last_login' => 'datetime',
-        'last_seen_at' => 'datetime',
         'password' => 'hashed'
     ];
 
