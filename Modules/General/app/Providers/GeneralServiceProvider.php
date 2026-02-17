@@ -5,6 +5,7 @@ namespace Modules\General\Providers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\General\Http\Middlewares\AcceptJsonMiddleware;
 use Modules\General\Http\Middlewares\AppLocaleMiddleware;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
@@ -30,6 +31,7 @@ class GeneralServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
         $this->app[Kernel::class]->prependMiddleware(AppLocaleMiddleware::class);
+        $this->app[Kernel::class]->prependMiddleware(AcceptJsonMiddleware::class);
     }
 
     /**

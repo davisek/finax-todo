@@ -40,6 +40,7 @@ class TodoService implements ITodoService
             'user_id' => $user->id,
             'title' => $request->title,
             'description' => $request->description,
+            'completed' => false,
         ]);
     }
 
