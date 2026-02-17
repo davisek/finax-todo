@@ -11,9 +11,33 @@ use Laravel\Sanctum\PersonalAccessToken;
 use Modules\General\Http\Resources\AppResponse;
 use Modules\User\Http\Resources\AuthResource;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use OpenApi\Attributes as OA;
 
 class RefreshController extends Controller
 {
+    #[OA\Post(
+        path: '/api/v1/auth/refresh',
+        summary: 'Refresh access token',
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    allOf: [
+                        new OA\Schema(ref: '#/components/schemas/AppResponse'),
+                        new OA\Schema(properties: [
+                            new OA\Property(property: 'auth', properties: [
+                                new OA\Property(property: 'access_token', type: 'string', example: '1|abc123...'),
+                                new OA\Property(property: 'expires_in', type: 'integer', example: 900),
+                            ], type: 'object'),
+                        ], type: 'object'),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Invalid or expired refresh token'),
+        ]
+    )]
     public function refresh()
     {
         $refreshToken = request()->cookie('refresh_token');
@@ -86,6 +110,24 @@ class RefreshController extends Controller
         );
     }
 
+    #[OA\Post(
+        path: '/api/v1/auth/revoke',
+        summary: 'Revoke all tokens',
+        security: [['bearerAuth' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    allOf: [
+                        new OA\Schema(ref: '#/components/schemas/AppResponse'),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function revoke()
     {
         $user = Auth::user();
@@ -110,6 +152,30 @@ class RefreshController extends Controller
         ));
     }
 
+    #[OA\Get(
+        path: '/api/v1/auth/check',
+        summary: 'Check token validity',
+        security: [['bearerAuth' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    allOf: [
+                        new OA\Schema(ref: '#/components/schemas/AppResponse'),
+                        new OA\Schema(properties: [
+                            new OA\Property(property: 'data', properties: [
+                                new OA\Property(property: 'user', ref: '#/components/schemas/AuthResource'),
+                                new OA\Property(property: 'token_expires_at', type: 'string', example: '2026-02-17 12:15:00'),
+                            ], type: 'object'),
+                        ], type: 'object'),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function check()
     {
         $user = Auth::user();

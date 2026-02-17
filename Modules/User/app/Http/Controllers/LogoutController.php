@@ -7,9 +7,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\General\Http\Resources\AppResponse;
+use OpenApi\Attributes as OA;
 
 class LogoutController extends Controller
 {
+    #[OA\Post(
+        path: '/api/v1/auth/logout',
+        summary: 'Logout user',
+        security: [['bearerAuth' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    allOf: [
+                        new OA\Schema(ref: '#/components/schemas/AppResponse'),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function logout()
     {
         $user = Auth::user();
