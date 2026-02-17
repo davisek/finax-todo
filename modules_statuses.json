@@ -1,3 +1,5 @@
 {
-    "General": true
+    "General": true,
+    "User": true,
+    "Todo": true
 }
